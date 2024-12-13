@@ -84,8 +84,35 @@ router.get("/products/qrcode/:pid", async (request, response) => {
 
 });
 
-router.post("/products/qrcode", async (request, response) => {
-    
-});
-
-export default router;
+router.post("/products/qrcode-update", async (request, response) => {
+    try {
+      const { body: { qrCodeContent } } = request;
+  
+      // Parse the QR code content
+      const productData = JSON.parse(qrCodeContent);
+  
+      // Locate the product in the database
+      const product = await Product.findOne({ where: { pid: productData.pid } });
+  
+      // Check if the product exists
+      if (!product) {
+        return response.status(404).json({ error: "Product not found" });
+      }
+  
+      // Check stock and update if sufficient
+      if (product.stock > 0) {
+        product.stock -= 1; // Decrement stock
+        await product.save(); // Save changes to the database
+        return response.json({ message: "Product stock updated successfully", product });
+      } else {
+        return response.status(400).json({ error: "Insufficient stock" });
+      }
+    } catch (error) {
+      // Log and return the error message
+      console.error("Error updating product stock:", error);
+      response.status(500).json({ error: "Internal server error" });
+    }
+  });
+  
+  export default router;
+  
