@@ -6,12 +6,20 @@ const Order = sequelize.define('Order', {
         autoIncrement: true,
         primaryKey: true
     },
-    total: {
-        type: DataTypes.DECIMAL,
-        allowNull: false
-    },
     status: {
         type: DataTypes.STRING,
+        allowNull: true
+    },
+    confirmation_hour: {
+        type: DataTypes.DATE,
+        allowNull: true
+    },
+    rate: {
+        type: DataTypes.DECIMAL,
+        allowNull: true
+    },
+    quantity: {
+        type: DataTypes.INTEGER,
         allowNull: false
     }
 });

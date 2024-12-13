@@ -6,6 +6,7 @@ import { Op } from 'sequelize';
 dotenv.config();
 const router = Router();
 router.use(verifyjwt);
+// create a new client
 router.post("/clients/create", async (request, response) => {
     try {
         const userid = request.userid;
@@ -17,6 +18,7 @@ router.post("/clients/create", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// get the list of clients
 router.get("/clients", async (request, response) => {
     try {
         const clients = await Client.findAll();
@@ -25,6 +27,7 @@ router.get("/clients", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// get a client by id
 router.get("/clients/:cid", async (request, response) => {
     const cid = request.params.cid;
     try {
@@ -36,13 +39,14 @@ router.get("/clients/:cid", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// update the client fullname adress phone number by id 
 router.patch("/clients/update/:cid", async (request, response) => {
     const cid = request.params.cid;
     const userid = request.userid;
     const client = request.body;
     try {
         const updatedclient = await Client.update(client, { where: { cid: cid, id_user: userid } });
-        if (updatedclient[0] === 0) {
+        if (!updatedclient) {
             return response.status(403).json({ error: "Client not found" });
         }
         response.json({ message: "Client updated" });
@@ -50,6 +54,7 @@ router.patch("/clients/update/:cid", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// delete the client by id
 router.delete("/clients/delete/:cid", async (request, response) => {
     const cid = request.params.cid;
     const userid = request.userid;

@@ -7,6 +7,7 @@ import verifyjwt from "../utils/jwt.js";
 import { Op } from 'sequelize';
 dotenv.config();
 const router = Router();
+// Create a new user
 router.post("/users/register", async (request, response) => {
     try {
         const user = request.body;
@@ -18,6 +19,7 @@ router.post("/users/register", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// delete the user
 router.delete("/users/delete", verifyjwt, async (request, response) => {
     const id = request.userid;
     try {
@@ -27,6 +29,7 @@ router.delete("/users/delete", verifyjwt, async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// login the user
 router.post("/users/login", async (request, response) => {
     const { login, password } = request.body;
 
@@ -66,6 +69,7 @@ router.post("/users/login", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// get the access token based on the refresh token 
 router.get("/users/refresh", async (request, response) => {
     try {
         const refreshToken = request.cookies.refreshToken;
@@ -90,9 +94,11 @@ router.get("/users/refresh", async (request, response) => {
         response.status(401).json({ error: error.message });
     }
 });
+// check the user is logged in or not
 router.get("/users/check", verifyjwt, async (request, response) => {
     response.json({ message: "User is logged in", userid: request.userid });
 });
+// logout the user
 router.post("/users/logout", verifyjwt, async (request, response) => {
     try {
         const cookies = request.cookies;
@@ -113,6 +119,7 @@ router.post("/users/logout", verifyjwt, async (request, response) => {
         response.status(401).json({ error: error.message });
     }
 });
+// update the user name email and storename
 router.patch("/users/update", verifyjwt, async (request, response) => {
     const id = request.userid;
     const user = request.body;
@@ -131,6 +138,7 @@ router.patch("/users/update", verifyjwt, async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+// update the user password
 router.patch("/users/updatepassword", verifyjwt, async (request, response) => {
     const id = request.userid;
     try {
