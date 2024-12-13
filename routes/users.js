@@ -1,5 +1,5 @@
 import { Router } from "express";
-import User from "../sequelize/schema/user.js";
+import { User } from "../sequelize/relation.js";
 import { hashPassword, comparePassword } from "../utils/helper.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -116,7 +116,7 @@ router.post("/users/logout", verifyjwt, async (request, response) => {
 router.patch("/users/update", verifyjwt, async (request, response) => {
     const id = request.userid;
     const user = request.body;
-    const allowedColumns = ["name", "email", "phonenumber"]; // Specify the columns that can be updated
+    const allowedColumns = ["name", "email", "storename"]; // Specify the columns that can be updated
     try {
         // Filter out the properties that are not allowed to be updated
         const updatedUser = Object.keys(user).reduce((acc, key) => {
@@ -139,11 +139,11 @@ router.patch("/users/updatepassword", verifyjwt, async (request, response) => {
         if (!user) {
             return response.status(404).json({ error: "User not found" });
         }
-        const isPasswordValid = await comparePassword(oldpassword, user.password);
+        const isPasswordValid = comparePassword(oldpassword, user.password);
         if (!isPasswordValid) {
             return response.status(400).json({ error: "Invalid password" });
         }
-        const hash = await hashPassword(newpassword);
+        const hash = hashPassword(newpassword);
         try {
             user.password = hash;
             await user.save();

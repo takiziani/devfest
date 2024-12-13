@@ -13,6 +13,7 @@ const verifyjwt = (req, res, next) => {
         (error, decoded) => {
             if (error) return res.status(403).json({ error: 'Invalid token' });
             req.userid = decoded.id;
+            console.log(decoded);
             next();
         });
 };
