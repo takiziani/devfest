@@ -38,6 +38,8 @@ const checkMessages = async () => {
                         id_client: isthere.cid,
                         quantity: resultjson.quantity
                     });
+                    product.stock -= resultjson.quantity;
+                    await product.save();
                     sendMessage("Order created");
                 } else {
                     const client = await Client.create({
@@ -56,6 +58,8 @@ const checkMessages = async () => {
                         id_client: client.cid,
                         quantity: resultjson.quantity
                     });
+                    product.stock -= resultjson.quantity;
+                    await product.save();
                     sendMessage("Order created");
                 }
             }
