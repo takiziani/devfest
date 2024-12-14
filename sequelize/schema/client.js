@@ -19,6 +19,14 @@ const Client = sequelize.define('Client', {
         allowNull: false,
         unique: true
     },
+    id_user: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    rating: {
+        type: DataTypes.INTEGER,
+        allowNull: true
+    }
 }, { updatedAt: false });
 
 export default Client;

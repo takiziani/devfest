@@ -2,6 +2,7 @@ import { Router } from "express";
 import { Client } from "../sequelize/relation.js";
 import dotenv from "dotenv";
 import verifyjwt from "../utils/jwt.js";
+import calcrating from "../utils/rating.js";
 import { Op } from 'sequelize';
 dotenv.config();
 const router = Router();
@@ -22,7 +23,11 @@ router.post("/clients/create", async (request, response) => {
 router.get("/clients", async (request, response) => {
     try {
         const userid = request.userid;
-        const clients = await Client.findAll({ where: { id_user: userid } });
+        var clients = await Client.findAll({ where: { id_user: userid } });
+        clients = await Promise.all(clients.map(async (client) => {
+            client.rating = await calcrating(client.cid);
+            return client;
+        }));
         response.json(clients);
     } catch (error) {
         response.status(400).json({ error: error.message });

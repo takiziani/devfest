@@ -14,13 +14,13 @@ const Order = sequelize.define('Order', {
         type: DataTypes.DATE,
         allowNull: true
     },
-    rate: {
-        type: DataTypes.DECIMAL,
-        allowNull: true
-    },
     quantity: {
         type: DataTypes.INTEGER,
         allowNull: false
-    }
+    },
+    id_user: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
 });
 export default Order;
