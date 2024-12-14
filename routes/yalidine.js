@@ -99,10 +99,48 @@ router.get('/full-histories/:s?', async (request, response) => {
         } else {
             return response.status(404).json({ error: 'No history found for this parcel' });
         }
-    } catch (error) {
+
+        } catch (error) {
         console.error('Error fetching parcel histories:', error);
         response.status(500).json({ error: 'Failed to fetch parcel histories' });
     }
 });
+
+router.delete('/yalidine/:s', async (request, response) => {
+    try {
+        const { params: { s } } = request;
+
+        // Make the DELETE request to Yalidine API
+        const res = await axios.delete(`https://api.yalidine.app/v1/parcels/${encodeURIComponent(s)}`, {
+            headers: {
+                'X-API-ID': apiId,
+                'X-API-TOKEN': apiToken
+            }
+        });
+
+        // Extract the response data
+        const deletionResult = res.data;
+
+        // Check if the deletion was successful
+        if (Array.isArray(deletionResult) && deletionResult.length > 0) {
+            const result = deletionResult[0]; // Assume single parcel deletion (method 1)
+            if (result.deleted) {
+                response.json({ message: `Parcel ${result.tracking} deleted successfully` });
+            } else {
+                response.status(400).json({
+                    error: `Parcel ${result.tracking} could not be deleted. Reason: Check tracking ID or parcel status.`
+                });
+            }
+        } else {
+            response.status(404).json({ error: 'No data returned from API for the given parcel.' });
+        }
+    } catch (error) {
+        console.error('Error deleting parcel:', error.response?.data || error.message);
+        response.status(500).json({
+            error: 'Failed to delete parcel. Ensure the parcel exists and meets deletion criteria.'
+        });
+    }
+});
+
 
 export default router;

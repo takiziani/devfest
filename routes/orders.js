@@ -16,6 +16,8 @@ router.post("/orders/create", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
 // search for a product by name
 router.get("/product/search", async (request, response) => {
     try {
@@ -33,6 +35,10 @@ router.get("/product/search", async (request, response) => {
     }
 });
 // search for a client by fullname
+
+
+
+
 router.get("/client/search", async (request, response) => {
     const query = request.query.fullname;
     try {
@@ -49,8 +55,11 @@ router.get("/client/search", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
 // get the list of orders
 router.get("/orders", async (request, response) => {
+
     try {
         const orders = await Order.findAll();
         response.json(orders);
@@ -58,6 +67,8 @@ router.get("/orders", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
 // get the list of orders with details form product and client
 router.get("/orders/details", async (request, response) => {
     try {
@@ -78,6 +89,9 @@ router.get("/orders/details", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
+
 // get a order by id
 router.get("/orders/:oid", async (request, response) => {
     const oid = request.params.oid;
@@ -94,6 +108,9 @@ router.get("/orders/:oid", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
+
 // update the order status rate confirmation hour by id 
 router.patch("/orders/update/:oid", async (request, response) => {
     const oid = request.params.oid;
@@ -108,6 +125,9 @@ router.patch("/orders/update/:oid", async (request, response) => {
         response.status(400).json({ error: error.message });
     }
 });
+
+
+
 // delete the order by id
 router.delete("/orders/delete/:oid", async (request, response) => {
     const oid = request.params.oid;

@@ -3,6 +3,8 @@ import { Client } from "../sequelize/relation.js";
 import dotenv from "dotenv";
 import verifyjwt from "../utils/jwt.js";
 import { Op } from 'sequelize';
+import { calculateCustomerRatingForClient } from "../utils/utilities.js";
+
 dotenv.config();
 const router = Router();
 router.use(verifyjwt);
@@ -23,6 +25,11 @@ router.get("/clients", async (request, response) => {
     try {
         const clients = await Client.findAll();
         response.json(clients);
+
+        clients.forEach(client => {
+        client.rating = calculateCustomerRatingForClient(client.cid);
+        });
+
     } catch (error) {
         response.status(400).json({ error: error.message });
     }
