@@ -8,7 +8,8 @@ const Order = sequelize.define('Order', {
     },
     status: {
         type: DataTypes.STRING,
-        allowNull: true
+        allowNull: true,
+        defaultValue: 'pending'
     },
     confirmation_hour: {
         type: DataTypes.DATE,

@@ -10,6 +10,15 @@ router.use(verifyjwt);
 router.post("/orders/create", async (request, response) => {
     try {
         const order = request.body;
+        const product = await Product.findOne({ where: { pid: order.pid } });
+        if (!product) {
+            return response.status(404).json({ error: "Product not found" });
+        }
+        if (product.stock < order.quantity) {
+            return response.status(400).json({ error: "Not enough stock" });
+        }
+        product.stock -= order.quantity;
+        await product.save();
         const neworder = await Order.create(order);
         response.json({ message: "Order created", order: neworder });
     } catch (error) {
@@ -111,12 +120,21 @@ router.patch("/orders/update/:oid", async (request, response) => {
     const userid = request.userid;
     const order = request.body;
     try {
-        const updatedorder = await Order.update(order, {
+        const updatedorder = await Order.findOne({
             where: {
                 oid: oid,
                 id_user: userid
             }
         });
+        if (!updatedorder) {
+            return response.status(403).json({ error: "Order not found" });
+        }
+        if (order.status === 'returned') {
+            const product = await Product.findOne({ where: { pid: updatedorder.pid } });
+            product.stock += updatedorder.quantity;
+            await product.save();
+        }
+        updatedorder.status = order.status;
         if (updatedorder[0] === 0) {
             return response.status(403).json({ error: "Order not found" });
         }
