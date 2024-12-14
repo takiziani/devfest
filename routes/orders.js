@@ -19,12 +19,14 @@ router.post("/orders/create", async (request, response) => {
 // search for a product by name
 router.get("/product/search", async (request, response) => {
     try {
+        userid = request.userid;
         const query = request.query.name;
         const products = await Product.findAll({
             where: {
                 name: {
                     [Op.like]: `%${query}%`
-                }
+                },
+                id_user: userid
             }, attributes: ['pid', 'name'] // Specify the attributes you want to return
         });
         response.json(products);
@@ -34,13 +36,15 @@ router.get("/product/search", async (request, response) => {
 });
 // search for a client by fullname
 router.get("/client/search", async (request, response) => {
+    const userid = request.userid;
     const query = request.query.fullname;
     try {
         const clients = await Client.findAll({
             where: {
                 fullname: {
                     [Op.like]: `%${query}%`
-                }
+                },
+                id_user: userid
             },
             attributes: ['cid', 'fullname'] // Specify the attributes you want to return
         });
@@ -52,7 +56,8 @@ router.get("/client/search", async (request, response) => {
 // get the list of orders
 router.get("/orders", async (request, response) => {
     try {
-        const orders = await Order.findAll();
+        const userid = request.userid;
+        const orders = await Order.findAll({ where: { id_user: userid } });
         response.json(orders);
     } catch (error) {
         response.status(400).json({ error: error.message });
@@ -61,7 +66,9 @@ router.get("/orders", async (request, response) => {
 // get the list of orders with details form product and client
 router.get("/orders/details", async (request, response) => {
     try {
+        const userid = request.userid;
         const orders = await Order.findAll({
+            where: { id_user: userid },
             include: [
                 {
                     model: Product,
@@ -81,9 +88,13 @@ router.get("/orders/details", async (request, response) => {
 // get a order by id
 router.get("/orders/:oid", async (request, response) => {
     const oid = request.params.oid;
+    const userid = request.userid;
     try {
         const order = await Order.findOne({
-            where: { oid: oid },
+            where: {
+                oid: oid,
+                id_user: userid
+            },
             include: [Product, Client]
         });
         if (!order) {
@@ -97,9 +108,15 @@ router.get("/orders/:oid", async (request, response) => {
 // update the order status rate confirmation hour by id 
 router.patch("/orders/update/:oid", async (request, response) => {
     const oid = request.params.oid;
+    const userid = request.userid;
     const order = request.body;
     try {
-        const updatedorder = await Order.update(order, { where: { oid: oid } });
+        const updatedorder = await Order.update(order, {
+            where: {
+                oid: oid,
+                id_user: userid
+            }
+        });
         if (updatedorder[0] === 0) {
             return response.status(403).json({ error: "Order not found" });
         }
@@ -110,9 +127,10 @@ router.patch("/orders/update/:oid", async (request, response) => {
 });
 // delete the order by id
 router.delete("/orders/delete/:oid", async (request, response) => {
-    const oid = request.params.oid;
     try {
-        const deletedorder = await Order.destroy({ where: { oid: oid } });
+        const oid = request.params.oid;
+        const userid = request.userid;
+        const deletedorder = await Order.destroy({ where: { oid: oid, id_user: userid } });
         if (deletedorder === 0) {
             return response.status(403).json({ error: "Order not found" });
         }

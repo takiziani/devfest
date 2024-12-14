@@ -21,7 +21,8 @@ router.post("/clients/create", async (request, response) => {
 // get the list of clients
 router.get("/clients", async (request, response) => {
     try {
-        const clients = await Client.findAll();
+        const userid = request.userid;
+        const clients = await Client.findAll({ where: { id_user: userid } });
         response.json(clients);
     } catch (error) {
         response.status(400).json({ error: error.message });
@@ -30,8 +31,9 @@ router.get("/clients", async (request, response) => {
 // get a client by id
 router.get("/clients/:cid", async (request, response) => {
     const cid = request.params.cid;
+    const userid = request.userid;
     try {
-        const client = await Client.findOne({ where: { cid: cid } });
+        const client = await Client.findOne({ where: { cid: cid, id_user: userid } });
         if (!client) {
             return response.status(404).json({ error: "Client not found" });
         }

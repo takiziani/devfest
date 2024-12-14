@@ -20,7 +20,8 @@ router.post("/products/create", async (request, response) => {
 });
 router.get("/products", async (request, response) => {
     try {
-        const products = await Product.findAll();
+        const userid = request.userid;
+        const products = await Product.findAll({ where: { id_user: userid } });
         response.json(products);
     } catch (error) {
         response.status(400).json({ error: error.message });
@@ -28,8 +29,9 @@ router.get("/products", async (request, response) => {
 });
 router.get("/products/:pid", async (request, response) => {
     const pid = request.params.pid;
+    const userid = request.userid;
     try {
-        const product = await Product.findOne({ where: { pid: pid } });
+        const product = await Product.findOne({ where: { pid: pid, id_user: userid } });
         if (!product) {
             return response.status(404).json({ error: "Product not found" });
         }

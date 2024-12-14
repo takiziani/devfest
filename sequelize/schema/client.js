@@ -16,7 +16,8 @@ const Client = sequelize.define('Client', {
     },
     phone: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
     },
 }, { updatedAt: false });
 
